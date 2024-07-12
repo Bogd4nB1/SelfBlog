@@ -1,0 +1,10 @@
+asgiref==3.7.2
+Django==5.0.3
+django-ckeditor==6.7.1
+django-debug-toolbar==4.3.0
+django-extensions==3.2.3
+django-js-asset==2.2.0
+pillow==10.2.0
+sqlparse==0.4.4
+typing_extensions==4.10.0
+tzdata==2024.1

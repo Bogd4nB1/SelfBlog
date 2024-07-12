@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load sidebar %}
+
+{% block title %}{{ post.title }} :: {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<section class="single-blog-area">
+    <div class="container">
+        <div class="row">
+           <div class="col-md-12">
+            <div class="border-top">
+                <div class="col-md-8">
+                <div class="blog-area">
+                    <div class="blog-area-part">
+                        <h2>{{ post.title }}</h2>
+                        <div class="single-content">
+                            {% comment %} <div>
+                                <span>Категория: <a href="{{post.get_absolute_url}}">{{ post.category }}</a></span>
+                                <br>
+                                {% if post.tags.exists %}
+                                    <span>
+                                        Тэги:
+                                        {% for tag in post.tags.all %}
+                                            <a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a>
+                                        {% endfor %}
+                                    </span>
+                                {% endif %}
+                                <br>
+                                <span>Views: {{ post.views }}</span>
+                            </div> {% endcomment %}
+                            {{ post.content|safe }}
+                        </div>
+                    </div>
+                    <div class="commententries">
+                        <h3>Comments</h3>
+
+                        {% for comment in comments %}
+                        <ul class="commentlist">
+                            <li>
+                                <article class="comment">
+                                    <header class="comment-author">
+                                        <img src="http://placekitten.com/g/300/700" alt="">
+                                    </header>
+                                    <section class="comment-details">
+                                        <div class="author-name">
+                                            <h5><a href="#">{{ comment.author }}</a></h5>
+                                            <p>{{ comment.created_at }}</p>
+                                        </div>
+                                        <div class="comment-body">
+                                            <p>{{ comment.description }}</p>
+                                        </div>
+                                        <div class="reply">
+                                            <p><span><a href="#"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>12</span><span><a
+                                                        href="#"><i class="fa fa-reply" aria-hidden="true"></i></a>7</span></p>
+                                        </div>
+                                    </section>
+                                    {% for reply in comment.to_comment.all %}
+                                    <ul class="children">
+                                        <li>
+                                            <article class="comment">
+                                                <header class="comment-author">
+                                                    <img src="http://placekitten.com/g/300/700" alt="">
+                                                </header>
+                                                <section class="comment-details">
+                                                    <div class="author-name">
+                                                        <h5><a href="#">{{ reply.author }}</a></h5>
+                                                        <p>{{ comment.created_at }}</p>
+                                                    </div>
+                                                    <div class="comment-body">
+                                                        <p>{{ reply.description }}</p>
+                                                    </div>
+                                                    <div class="reply">
+                                                        <p><span><a href="#"><i class="fa fa-thumbs-up"
+                                                                        aria-hidden="true"></i></a>12</span><span><a href="#"><i
+                                                                        class="fa fa-reply" aria-hidden="true"></i></a>7</span></p>
+                                                    </div>
+                                                </section>
+                                            </article>
+                                        </li>
+                                    </ul>
+                                    {% endfor %}
+                                </article>
+                            </li>
+                        </ul>
+                        {% endfor %}
+
+                    </div>
+                    <form action="#" method="post">
+                        <div class="name">
+                            <input type="text" name="" id="author" placeholder="Name" class="name">
+                        </div>
+                        <div class="comment">
+                            <input type="text" name="" id="description" placeholder="Comment" class="comment">
+                        </div>
+                        <div class="post">
+                            <input type="submit" value="Post" id="addcomment" data-index="{{ post.id }}">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4">
+               <div class="newsletter">
+                    <h2 class="sidebar-title">Search</h2>
+                    <form action="{% url 'search' %}" method="get">
+                        <input type="text" name="s" placeholder="Search...">
+                        <input type="submit" value="Search">
+                    </form>
+                </div>
+
+               {% get_popular %}
+
+                {% get_tags %}
+            </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).on('click', '#addcomment', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "comment" %}',
+            data: {
+                post_id: $(this).data('index'),
+                post_author: document.getElementById('author').value,
+                post_description: document.getElementById('description').value,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post',
+            },
+            success: function(response){
+                console.log(response)
+                location.reload()
+            },
+            error: function(error, status){
+                console.log(error)
+            }
+        })
+    });
+</script>
+{% endblock %}
